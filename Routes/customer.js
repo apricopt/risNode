@@ -59,9 +59,6 @@ router.post("/login", (req, res) => {
       value
     ) {
       if (err) {
-        res.send(
-          "one of the info is not correct! Please try with correct credentials"
-        );
         return console.log(err);
       }
       console.log("Result: ", value);
@@ -75,7 +72,8 @@ router.post("/login", (req, res) => {
 });
 
 // to add into favorites
-router.get("/fav/add", (req, res) => {
+router.post("/fav/add", (req, res) => {
+  console.log(req.body);
   // update records
   odoo.connect(function (err) {
     if (err) {
@@ -83,9 +81,9 @@ router.get("/fav/add", (req, res) => {
     }
     console.log("Connected to Odoo server.");
     var inParams = [];
-    inParams.push([5507]); //id to update
+    inParams.push([req.body.user_id]); //id to update
     inParams.push({
-      x_studio_favouritesmany: [5261], // it will accept idies of products and will update the favourite products no matter it is delete or add. it will just create the mirror you know.
+      x_studio_favouritesmany: req.body.favitems, // [5261] it will accept idies of products and will update the favourite products no matter it is delete or add. it will just create the mirror you know.
     });
     var params = [];
     params.push(inParams);
@@ -94,6 +92,7 @@ router.get("/fav/add", (req, res) => {
         return console.log(err);
       }
       console.log("Result: ", value);
+      res.send(value);
     });
   });
 });

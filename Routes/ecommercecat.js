@@ -28,6 +28,45 @@ router.get("/testing", (req, res) => {
 });
 
 //!  to get the categories
+// router.get("/categories", (req, res) => {
+//   // read record  (filtered by category)
+//   odoo.connect(function (err) {
+//     if (err) {
+//       return console.log(err);
+//     }
+//     console.log("Connected to Odoo server.");
+//     var inParams = [];
+//     inParams.push([]); // domain filter (Possibly empty as inParams.push([]))
+//     inParams.push(0); //offset
+//     // inParams.push(5); //Limit
+//     var params = [];
+//     params.push(inParams);
+//     odoo.execute_kw("product.category", "search", params, function (
+//       err,
+//       value
+//     ) {
+//       if (err) {
+//         return console.log(err);
+//       }
+//       var inParams = [];
+//       inParams.push(value); //ids
+//       inParams.push(["id", "name", "parent_id", "child_id"]); //fields
+//       var params = [];
+//       params.push(inParams);
+//       odoo.execute_kw("product.public.category", "read", params, function (
+//         err2,
+//         value2
+//       ) {
+//         if (err2) {
+//           return console.log(err2);
+//         }
+//         res.send(value2);
+//       })
+//     })
+//   })
+// })
+
+//!  to get the categories
 router.get("/categories", (req, res) => {
   // read record  (filtered by category)
   odoo.connect(function (err) {
@@ -41,7 +80,7 @@ router.get("/categories", (req, res) => {
     // inParams.push(5); //Limit
     var params = [];
     params.push(inParams);
-    odoo.execute_kw("product.category", "search", params, function (
+    odoo.execute_kw("product.public.category", "search", params, function (
       err,
       value
     ) {
@@ -50,10 +89,10 @@ router.get("/categories", (req, res) => {
       }
       var inParams = [];
       inParams.push(value); //ids
-      inParams.push(["id", "name", "parent_id", "child_id", "product_count"]); //fields
+      inParams.push(["id", "name", "parent_id", "child_id"]); //fields
       var params = [];
       params.push(inParams);
-      odoo.execute_kw("product.category", "read", params, function (
+      odoo.execute_kw("product.public.category", "read", params, function (
         err2,
         value2
       ) {
@@ -125,7 +164,7 @@ router.post("/products/:main/:sub/:micro", (req, res) => {
     }
     console.log("Connected to Odoo server.");
     var inParams = [];
-    inParams.push([["categ_id", "=", req.body.categ_id]]); // domain filter (Possibly empty as inParams.push([]))
+    inParams.push([["public_categ_ids", "=", req.body.categ_id]]); // domain filter (Possibly empty as inParams.push([]));
     inParams.push(0); //offset
     // inParams.push(5); //Limit
     var params = [];
@@ -140,108 +179,7 @@ router.post("/products/:main/:sub/:micro", (req, res) => {
         "id",
         "display_name",
         "free_qty",
-        "categ_id",
-        "list_price",
-        // "image_1920",
-      ]); //fields
-      var params = [];
-      params.push(inParams);
-      odoo.execute_kw("product.product", "read", params, function (
-        err2,
-        value2
-      ) {
-        if (err2) {
-          return console.log(err2);
-        }
-        // this console to show the products get displayed in categories
-        console.log("product agya hen {inventory.js}");
-        console.log("yeh raha data", value2);
-        res.send(value2);
-      });
-    });
-  });
-});
-
-// to get info about specific product
-router.get("/product/:id", (req, res) => {
-  console.log(req.params.id);
-
-  // read record  (filtered by category)
-  odoo.connect(function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log("Connected to Odoo server.");
-    var inParams = [];
-    inParams.push([["id", "=", `${parseInt(req.params.id)}`]]); // domain filter (Possibly empty as inParams.push([]))
-    inParams.push(0); //offset
-    // inParams.push(5); //Limit
-    var params = [];
-    params.push(inParams);
-    odoo.execute_kw("product.product", "search", params, function (err, value) {
-      if (err) {
-        return console.log(err);
-      }
-      var inParams = [];
-      inParams.push(value); //ids
-      inParams.push([
-        "display_name",
-        "free_qty",
-        "categ_id",
-        "list_price",
-        "image_1920",
-        "x_studio_dimension",
-        "x_studio_brand",
-        "default_code",
-        "description_sale",
-        "x_studio_image2",
-        "x_studio_image3",
-        "x_studio_image4",
-        "x_studio_image5",
-      ]); //fields
-      var params = [];
-      params.push(inParams);
-      odoo.execute_kw("product.product", "read", params, function (
-        err2,
-        value2
-      ) {
-        if (err2) {
-          return console.log(err2);
-        }
-        // this console.log to show single product detail in product gallery
-        console.log("specific product res");
-        res.send(value2);
-      });
-    });
-  });
-});
-
-// to search you may like products
-router.get("/maylike/:id", (req, res) => {
-  console.log(req.params);
-  // read record  (filtered by category)
-  odoo.connect(function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log("Connected to Odoo server.");
-    var inParams = [];
-    inParams.push([["categ_id", "=", parseInt(req.params.id)]]); // domain filter (Possibly empty as inParams.push([]))
-    inParams.push(0); //offset
-    // inParams.push(5); //Limit
-    var params = [];
-    params.push(inParams);
-    odoo.execute_kw("product.product", "search", params, function (err, value) {
-      if (err) {
-        return console.log(err);
-      }
-      var inParams = [];
-      inParams.push(value); //ids
-      inParams.push([
-        "id",
-        "display_name",
-        "free_qty",
-        "categ_id",
+        "public_categ_ids",
         "list_price",
         "image_1920",
       ]); //fields
@@ -255,11 +193,13 @@ router.get("/maylike/:id", (req, res) => {
           return console.log(err2);
         }
         // this console to show the products get displayed in categories
-        console.log(value2);
+        console.log("products agaye hen");
+        console.log("yeh rahy products", value2);
         res.send(value2);
       });
     });
   });
 });
+
 // exporting these routes
 module.exports = router;
